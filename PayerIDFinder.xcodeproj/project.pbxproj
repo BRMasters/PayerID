@@ -1,1 +1,1 @@
-// Placeholder Xcode project
+// Placeholder Xcode project with Info.plist reference

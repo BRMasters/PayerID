@@ -20,9 +20,61 @@ struct ContentView: View {
                     Text("Payer ID Finder")
                         .font(.largeTitle)
                         .bold()
-                    // ... other UI components ...
-                }
-                .padding()
+
+                    Group {
+                        TextField("Smart Data Token", text: $smartDataToken)
+                        TextField("TriZetto Username", text: $triZettoUser)
+                        SecureField("TriZetto Password", text: $triZettoPass)
+                        TextField("Waystar API Key", text: $waystarKey)
+                        TextField("Experian API Key", text: $experianKey)
+                    }
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+
+                    TextField("Enter Payer Name", text: $payerName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+
+                    Button("Import CSV") {}
+                        .buttonStyle(.borderedProminent)
+
+                    Button(action: {}) {
+                        Label("Use Camera", systemImage: "camera")
+                    }
+
+                    Button(action: {}) {
+                        Label("Use Voice", systemImage: "mic.fill")
+                    }
+
+                    Button("Lookup Payer ID") {
+                        Task {
+                            isLoading = true
+                            result = await lookupService.lookupPayerID(
+                                for: payerName,
+                                smartDataToken: smartDataToken,
+                                triZettoUser: triZettoUser,
+                                triZettoPass: triZettoPass,
+                                waystarKey: waystarKey,
+                                experianKey: experianKey)
+                            isLoading = false
+                        }
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+
+                    if isLoading {
+                        ProgressView()
+                    } else if let result = result {
+                        VStack {
+                            Text("Source: \(result.source)")
+                            Text("Payer ID: \(result.payerID)")
+                        }.padding()
+                    }
+
+                    Spacer()
+                }.padding()
             }
         }
     }
